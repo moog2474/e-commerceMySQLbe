@@ -3,25 +3,28 @@ POST http://localhost:8000/be/users
 Content-Type: application/json
 
 {
-    "userName": "Moog",
-    "firstName": "Moogii",
-    "lastName": "B",
-    "email": "moog@gmail.com",
-    "userType": "admin",
-    "password": "moog"
+  "firstname": "moogii",
+  "lastname": "moog",
+  "email": "mooogiiii@yahoo.com"
 }
 
 ###
 GET http://localhost:8000/be/users?limit=10
 
 ###
-GET http://localhost:8000/be/users/5
+GET http://localhost:8000/be/users/1
 
 ###
-PUT http://localhost:8000/be/users/
+PUT http://localhost:8000/be/users/2
+Content-Type: application/json
+
+{   
+    "firstname": "hi",
+    "email": "123@yahoo.com"
+}
 
 ###
-DELETE http://localhost:8000/be/users/7037f197-9240-4909-93af-feb2b3877c91
+DELETE http://localhost:8000/be/users/3
 
 
 ###

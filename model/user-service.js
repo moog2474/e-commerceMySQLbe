@@ -36,7 +36,8 @@ exports.createUser = async (user) => {
             null,
             firstname,
             lastname,
-            email]
+            email
+        ]
     );
     return result;
 };
