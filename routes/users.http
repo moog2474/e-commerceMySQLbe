@@ -12,10 +12,10 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:8000/be/users
+GET http://localhost:8000/be/users?limit=10
 
 ###
-GET http://localhost:8000/be/users/5a150972-a873-49d2-a94c-b44e7cf06e71
+GET http://localhost:8000/be/users/5
 
 ###
 PUT http://localhost:8000/be/users/

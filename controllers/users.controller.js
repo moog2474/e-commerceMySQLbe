@@ -4,136 +4,100 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const myKey = "123456789!@#$&*";
 
-
+const userService = require('../model/user-service')
 const dataFile = process.cwd() + "/data/users.json"
 
-exports.getAll = (req, res) => {
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
+exports.getAll = async (req, res) => {
+    const { limit } = req.query;
+    try {
 
-        if (readErr) {
-            return res.json({ status: false, result: readErr })
+        const result = await userService.getUsers(limit);
+        if (result && result.length > 0) {
+            res.json({ status: true, result });
+
         }
-        const savedData = JSON.parse(data);
-        return res.json({ status: true, result: savedData })
-    })
+    } catch (err) {
+        console.log(err);
+        res.json({ status: false, message: err })
+    }
 }
 
-exports.get = (req, res) => {
-    const { id } = req.params
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
-        }
-        const myData = JSON.parse(data)
-        const savedData = myData.filter((e) => e.id == id)
-
-        return res.json({ status: true, result: savedData })
-    })
-}
-
-
-exports.create = (req, res) => {
-    const { userName, password, userType, firstName, lastName, email } = req.body;
-
-    fs.readFile(dataFile, "utf-8", async (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
-        }
-
-        const parsedDAta = data ? JSON.parse(data) : [];
-
-        const newPassword = await bcrypt.hash(password + myKey, saltRounds)
-        console.log(newPassword);
-
-        const newObj = {
-            id: uuid.v4(),
-            userName,
-            password: newPassword,
-            userType,
-            firstName,
-            lastName,
-            email,
-            favoriteProduct: [],
-            createdData: Date.now()
-        };
-
-        parsedDAta.push(newObj);
-
-        fs.writeFile(dataFile, JSON.stringify(parsedDAta), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: parsedDAta })
-        })
-    })
-}
-
-exports.update = (req, res) => {
-    const { id } = req.params
-    const {
-        userName,
-        password,
-        userType,
-        firstName,
-        lastName,
-        email,
-        favoriteProduct,
-        lastLoginDate
-    } = req.body;
-
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
-        }
-
-        const parsedData = JSON.parse(data)
-
-        const updateData = parsedData.map((userObj) => {
-            if (userObj.id == id) {
-                return {
-                    ...userObj,
-                    userName,
-                    password,
-                    userType,
-                    firstName,
-                    lastName,
-                    email,
-                    favoriteProduct,
-                    lastLoginDate,
-                    updatedDate: Date.now()
-                }
-            }
-            else {
-                return userObj;
-            }
-        });
-        fs.writeFile(dataFile, JSON.stringify(updateData), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: updateData })
-        })
-    })
-}
-
-exports.delete = (req, res) => {
+exports.get = async (req, res) => {
     const { id } = req.params;
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
+
+    if (!id)
+        return res.json({ status: false, message: 'user id not found' })
+    try {
+        const result = await userService.getUser(id);
+
+        res.json({ status: true, result });
+
+    } catch (err) {
+        console.log(err);
+        res.json({ status: false, message: err })
+    }
+
+}
+exports.create = async (req, res) => {
+    const { firstname, lastname, email } = req.body;
+
+    const newObj = {
+        firstname, lastname, email
+    }
+    try {
+        const result = await userService.createUser(newObj);
+        if (result && result.affectedRows > 0) {
+
+            res.json({ status: true, result });
         }
+        else {
+            res.json({ status: false, message: "Nemehed aldaa garlaa" })
+        }
+    }
+    catch (err) {
+        res.json({ status: false, message: err });
+    }
+}
 
-        const parsedDAta = JSON.parse(data);
+exports.update = async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.json({ status: false, message: "user id not found" })
+    }
+    try {
+        const result = await userService.updateUser(id, req.body);
+        if (result.length > 0 && result[0].affectedRows > 0) {
 
-        const deletedData = parsedDAta.filter((e) => e.id != id);
+            res.json({ status: true, message: "Success" });
+        }
+        else {
+            res.json({ status: false, message: "Zasahad aldaa garlaa" })
+        }
+    }
+    catch (err) {
+        res.json({ status: false, message: err });
+    }
 
-        fs.writeFile(dataFile, JSON.stringify(deletedData), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: deletedData })
-        })
-    })
+}
+
+exports.delete = async (req, res) => {
+    const { id } = req.params;
+    if (!id) {
+        return res.json({ status: false, message: "user id not found" })
+    }
+    try {
+        const result = await userService.deleteUser(id);
+        if (result && result.affectedRows > 0) {
+
+            res.json({ status: true, message: "Success" });
+        }
+        else {
+            res.json({ status: false, message: "Ustgahad aldaa garlaa" })
+        }
+    }
+    catch (err) {
+        res.json({ status: false, message: err });
+    }
 }
 
 exports.login = (req, res) => {
