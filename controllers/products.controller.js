@@ -2,97 +2,105 @@ const fs = require("fs");
 const { parse } = require("path");
 const uuid = require("uuid");
 
+
+const productService = require('../model/product-service')
 const dataFile = process.cwd() + "/data/products.json"
 
-exports.getAll = (req, res) => {
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
+exports.getAll = async (req, res) => {
+    const {limit} = req.query;
+    
+ try{
+    const result = await productService.getProducts(limit);
 
-        if (readErr) {
-            return res.json({ status: false, result: readErr })
-        }
-        const savedData = JSON.parse(data);
-        return res.json({ status: true, result: savedData })
-    })
+    if(result && result.length > 0){
+        res.json({status: true, result});
+    }
+ } catch(err){
+    res.json({status: false, message: err})
+ }
 }
-exports.get = (req, res) => {
+
+exports.get = async (req, res) => {
     const { id } = req.params
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
-        }
-        const myData = JSON.parse(data)
-        const savedData = myData.filter((e) => e.id == id)
+   
+    if(!id)
+        return res.json({ status: false, message: 'product id not found'})
+    try {
+        const result = await productService.getProduct(id);
 
-        return res.json({ status: true, result: savedData })
-    })
+        res.json({ status: true, result})
+    } catch (err){
+        res.json({status: false, message: err})
+    }
 }
 
 
-exports.create = (req, res) => {
-    const { productName, price, discount, quantity, category, createdUser, description, images, thumbimage } = req.body;
+exports.create = async (req, res) => {
+    const { productName, price, discount, quantity, categoryId, createdUser, descriptions, images, thumbnail } = req.body;
 
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
+    const newObj = {
+        productName, 
+        categoryId, 
+        price, 
+        discount, 
+        createdUser, 
+        descriptions, 
+        thumbnail, 
+        images, 
+        quantity
+    }
+
+    try{
+        const result = await productService.createProduct(newObj);
+        if(result && result.affectedRows > 0){
+            res.json({status: true, result})
         }
-
-        const parsedDAta = data ? JSON.parse(data) : [];
-        const newObj = { id: uuid.v4(), productName, categoryId: uuid.v4(), price, category, discount, quantity, createdUser, description, images, thumbimage };
-
-        parsedDAta.push(newObj);
-
-        fs.writeFile(dataFile, JSON.stringify(parsedDAta), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: parsedDAta })
-        })
-    })
+        else{
+            res.json({status: false, message: 'Error occured when creating product'})
+        }
+    }
+    catch(err){
+        res.json({status: false, message: err})
+    }
 }
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
     const { id } = req.params
-    const { productName, categoryId, price, discount, category, quantity, createdUser, description, images, thumbimage } = req.body;
-
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
+    
+    if(!id) {
+        return res.json({status: false, message: "product id not found"})
+    }
+    try{
+        const result = await productService.updateProduct(id, req.body);
+        if (result.length > 0 && result[0].affectedRows > 0){
+            res.json({status: true, message: 'Succes'})
         }
-        const parsedData = JSON.parse(data)
-        const updateData = parsedData.map((productObj) => {
-            if (productObj.id == id) {
-                return {
-                    ...productObj,
-                    productName, categoryId, price, discount, category, quantity, createdUser, description, images, thumbimage
-                }
-            }
-            else {
-                return productObj;
-            }
-        });
-        fs.writeFile(dataFile, JSON.stringify(updateData), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: updateData })
-        })
-    })
+        else{
+            res.json({status: false, message: 'Error occured when editing'})
+        }
+    }
+    catch(err){
+        res.json({status: false, message: err});
+    }
+
 }
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
     const { id } = req.params;
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
-        }
-        const parsedDAta = JSON.parse(data);
-        const deletedData = parsedDAta.filter((e) => e.id != id);
 
-        fs.writeFile(dataFile, JSON.stringify(deletedData), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: deletedData })
-        })
-    })
+    if(!id){
+        return res.json({status: false, message: 'product id not found'})
+    }
+    try{
+        const result = await productService.deleteProduct(id);
+        if(result && result.affectedRows > 0 ){
+            res.json({status: true, message: 'Success'});
+        }
+        else{
+            res.json({status: false, message: 'Error occured when deleting product'})
+        }
+    }
+    catch(err){
+        res.json({status: false, message: err});
+    }
 }
