@@ -3,15 +3,17 @@ POST http://localhost:8000/be/products
 Content-Type: application/json
 
 {
-    "productName": "Men's sweater", 
-    "categoryId": "", 
+    "productName": "shoes", 
+    "categoryId": 2, 
     "price": 500, 
-    "discount": 20, 
-    "quantity": 30, 
-    "createdUser": "moog", 
-    "description": "this product is ...", 
-    "images": [], 
-    "thumnail": ""
+    "quantity": 10, 
+    "brandId": 3, 
+    "thumbnail": "url", 
+    "discount": 10, 
+    "descriptions": "this product is good", 
+    "saleFinishDate": "",
+    "createdDate": "",
+    "createdUser": "moog" 
 }
 
 ###

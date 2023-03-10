@@ -26,21 +26,35 @@ exports.getProduct = async (id) => {
 
 exports.createProduct = async (product) => {
 
-    const { productName, categoryId, price, discount, createdUser, descriptions, thumbnail, images, quantity } = product;
+   const { 
+        productName, 
+        categoryId, 
+        price, 
+        quantity, 
+        brandId, 
+        thumbnail, 
+        discount, 
+        descriptions, 
+        saleFinishDate,
+        createdDate, 
+        createdUser 
+    } = product;
 
     const [result] = await pool.query(
-        `INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             null,
-            productName,
-            categoryId,
-            price,
-            discount,
-            createdUser,
-            descriptions,
-            thumbnail,
-            images,
-            quantity
+            productName, 
+            categoryId, 
+            price, 
+            quantity, 
+            brandId, 
+            thumbnail, 
+            discount, 
+            descriptions, 
+            saleFinishDate,
+            createdDate, 
+            createdUser 
         ]
     );
     return result;

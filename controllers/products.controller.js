@@ -36,18 +36,32 @@ exports.get = async (req, res) => {
 
 
 exports.create = async (req, res) => {
-    const { productName, price, discount, quantity, categoryId, createdUser, descriptions, images, thumbnail } = req.body;
+    const { 
+        productName, 
+        categoryId, 
+        price, 
+        quantity, 
+        brandId, 
+        thumbnail, 
+        discount, 
+        descriptions, 
+        saleFinishDate,
+        createdDate, 
+        createdUser 
+    } = req.body;
 
     const newObj = {
-        productName,
-        categoryId,
-        price,
-        discount,
-        quantity,
-        createdUser,
-        descriptions,
-        thumbnail,
-        images
+        productName, 
+        categoryId, 
+        price, 
+        quantity, 
+        brandId, 
+        thumbnail, 
+        discount, 
+        descriptions, 
+        saleFinishDate,
+        createdDate, 
+        createdUser 
     }
 
     try {

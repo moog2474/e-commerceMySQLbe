@@ -17,7 +17,7 @@ exports.getCategories = async (limit) => {
 
 exports.getCategory = async (id) => {
     try {
-        const [row] = await pool.query(`SELECT * FROM category where catId=${id}`);
+        const [row] = await pool.query(`SELECT * FROM category where categoryId=${id}`);
         return row[0];
     }
     catch (err) {
@@ -28,14 +28,14 @@ exports.getCategory = async (id) => {
 
 exports.createCategory = async (category) => {
 
-    const { categoryName, link } = category;
+    const { categoryName, createAt } = category;
     //this question marks are similar with C language => printf('%d %d', x,y)
     const [result] = await pool.query(
         `INSERT INTO category VALUES (?, ?, ?)`,
         [
             null,
             categoryName,
-            link
+            createAt
         ]
     );
     return result;
@@ -46,7 +46,7 @@ exports.updateCategory = async (catId, updatedData) => {
     for (let i = 0; i < Object.keys(updatedData).length; i++) {
         result = await pool.query(
             `UPDATE category SET ${Object.keys(updatedData)[i]} ='${Object.values(updatedData)[i]
-            }'  WHERE catId = ${catId}`
+            }'  WHERE categoryId = ${catId}`
         );
     }
     return result;

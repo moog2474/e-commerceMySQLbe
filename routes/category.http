@@ -11,7 +11,7 @@ Content-Type: application/json
 
 {
     "categoryName": "Eyepatch",
-    "link": "/eyepatch"
+    "createAt": "/eyepatch"
 }
 
 ###
