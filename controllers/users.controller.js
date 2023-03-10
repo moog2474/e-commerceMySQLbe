@@ -23,12 +23,12 @@ exports.getAll = async (req, res) => {
 }
 
 exports.get = async (req, res) => {
-    const { id } = req.params;
+    const { userId } = req.params;
 
-    if (!id)
+    if (!userId)
         return res.json({ status: false, message: 'user id not found' })
     try {
-        const result = await userService.getUser(id);
+        const result = await userService.getUser(userId);
 
         res.json({ status: true, result });
 
@@ -39,10 +39,10 @@ exports.get = async (req, res) => {
 
 }
 exports.create = async (req, res) => {
-    const { firstname, lastname, email } = req.body;
+    const { firstName, lastName, userName, email, password } = req.body;
 
     const newObj = {
-        firstname, lastname, email
+        firstName, lastName, userName, email, password
     }
     try {
         const result = await userService.createUser(newObj);
@@ -60,12 +60,12 @@ exports.create = async (req, res) => {
 }
 
 exports.update = async (req, res) => {
-    const { id } = req.params;
-    if (!id) {
+    const { userId } = req.params;
+    if (!userId) {
         return res.json({ status: false, message: "user id not found" })
     }
     try {
-        const result = await userService.updateUser(id, req.body);
+        const result = await userService.updateUser(userId, req.body);
         if (result.length > 0 && result[0].affectedRows > 0) {
 
             res.json({ status: true, message: "Success" });
@@ -81,12 +81,12 @@ exports.update = async (req, res) => {
 }
 
 exports.delete = async (req, res) => {
-    const { id } = req.params;
-    if (!id) {
+    const { userId } = req.params;
+    if (!userId) {
         return res.json({ status: false, message: "user id not found" })
     }
     try {
-        const result = await userService.deleteUser(id);
+        const result = await userService.deleteUser(userId);
         if (result && result.affectedRows > 0) {
 
             res.json({ status: true, message: "Success" });
@@ -96,6 +96,7 @@ exports.delete = async (req, res) => {
         }
     }
     catch (err) {
+
         res.json({ status: false, message: err });
     }
 }
@@ -124,7 +125,7 @@ exports.login = (req, res) => {
 
                 if (decrypt) {
                     user = {
-                        id: parsedData[i].id,
+                        userId: parsedData[i].id,
                         email: parsedData[i].email,
                         lastName: parsedData[i].lastName,
                         firstName: parsedData[i].firstName,

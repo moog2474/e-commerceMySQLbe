@@ -3,9 +3,11 @@ POST http://localhost:8000/be/users
 Content-Type: application/json
 
 {
-  "firstname": "moogii",
-  "lastname": "moog",
-  "email": "mooogiiii@yahoo.com"
+  "firstName": "saraa",
+  "lastName": "welner",
+  "userName": "moon@gmail.com",
+  "email": "mooogiiii@yahoo.com",
+  "password": "qwqwe"
 }
 
 ###

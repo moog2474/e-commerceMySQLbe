@@ -15,9 +15,9 @@ exports.getUsers = async (limit) => {
 }
 
 
-exports.getUser = async (id) => {
+exports.getUser = async (userId) => {
     try {
-        const [row] = await pool.query(`SELECT * FROM users where id=${id}`);
+        const [row] = await pool.query(`SELECT * FROM users where userId=${userId}`);
         return row[0];
     }
     catch (err) {
@@ -28,35 +28,37 @@ exports.getUser = async (id) => {
 
 exports.createUser = async (user) => {
 
-    const { firstname, lastname, email } = user;
+    const { firstName, lastName, userName, email, password } = user;
     //this question marks are similar with C language => printf('%d %d', x,y)
     const [result] = await pool.query(
-        `INSERT INTO users VALUES (?, ?, ?, ?)`,
+        `INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)`,
         [
             null,
-            firstname,
-            lastname,
-            email
+            firstName,
+            lastName,
+            userName,
+            email,
+            password
         ]
     );
     return result;
 };
 
-exports.updateUser = async (id, updatedData) => {
+exports.updateUser = async (userId, updatedData) => {
     let [result] = "";
     for (let i = 0; i < Object.keys(updatedData).length; i++) {
         result = await pool.query(
             `UPDATE users SET ${Object.keys(updatedData)[i]} ='${Object.values(updatedData)[i]
-            }'  WHERE id = ${id}`
+            }'  WHERE userId = ${userId}`
         );
     }
     return result;
 };
 
 
-exports.deleteUser = async (id) => {
+exports.deleteUser = async (userId) => {
     const [result] = await pool.query(
-        `DELETE FROM users WHERE id='${id}'`
+        `DELETE FROM users WHERE userId='${userId}'`
     );
     return result;
 };

@@ -16,7 +16,7 @@ exports.getProducts = async (limit) => {
 
 exports.getProduct = async (id) => {
     try {
-        const [row] = await pool.query(`SELECT * from products where id=${id}`);
+        const [row] = await pool.query(`SELECT * from products where productId=${id}`);
         return row[0];
     }
     catch (err) {

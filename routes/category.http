@@ -2,7 +2,7 @@
 GET http://localhost:8000/be/category
 
 ###
-GET http://localhost:8000/be/category/:id
+GET http://localhost:8000/be/category/1
 
 
 ###
@@ -11,19 +11,15 @@ Content-Type: application/json
 
 {
     "categoryName": "Eyepatch",
-    "link": "/link"
+    "link": "/eyepatch"
 }
 
 ###
-PUT http://localhost:8000/be/category/:id
+PUT http://localhost:8000/be/category/2
 Content-Type: application/json
 
 {
-    "id": "ea21412c-1f26-40ff-8944-4c8e8452e2f1",
-      "categoryName": "Menu",
-      "link": "/link",
-      "position": 1,
-    
+      "categoryName": "t-shirt"   
 }
 ###
-DELETE http://localhost:8000/be/category/3dd6c3fa-0bd5-4826-9344-8a0d61a68dec
+DELETE http://localhost:8000/be/category/2

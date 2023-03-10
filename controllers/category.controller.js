@@ -2,92 +2,98 @@ const fs = require("fs")
 const { parse } = require("path")
 const uuid = require("uuid");
 
+const catService = require('../model/category-service')
 const dataFile = process.cwd() + "/data/category.json"
 
-exports.getAll = (req, res) => {
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, result: readErr })
+exports.getAll = async (req, res) => {
+    const { limit } = req.query;
+    try {
+
+        const result = await catService.getCategories(limit);
+        if (result && result.length > 0) {
+            res.json({ status: true, result });
+
         }
-        const savedData = JSON.parse(data)
-        return res.json({
-            status: true, result: savedData
-        })
-    })
+    } catch (err) {
+        console.log(err);
+        res.json({ status: false, message: err })
+    }
 }
 
-exports.get = (req, res) => {
-    const { id } = req.params
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
-        }
-        const myData = JSON.parse(data)
-        const savedData = myData.filter((e) => e.id == id)
+exports.get = async (req, res) => {
+    const { catId } = req.params;
 
-        return res.json({ status: true, result: savedData })
-    })
+    if (!catId)
+        return res.json({ status: false, message: 'category id not found' })
+    try {
+        const result = await catService.getCategory(catId);
+
+        res.json({ status: true, result });
+
+    } catch (err) {
+        console.log(err);
+        res.json({ status: false, message: err })
+    }
+
 }
-
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     const { categoryName, link } = req.body;
 
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
+    const newObj = {
+        categoryName, link
+    }
+    try {
+        const result = await catService.createCategory(newObj);
+        if (result && result.affectedRows > 0) {
+
+            res.json({ status: true, result });
         }
-        const parsedDAta = data ? JSON.parse(data) : [];
-        const newObj = { id: uuid.v4(), categoryName, link }
-
-        parsedDAta.push(newObj);
-
-        fs.writeFile(dataFile, JSON.stringify(parsedDAta), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: parsedDAta })
-        })
-    })
+        else {
+            res.json({ status: false, message: "Nemehed aldaa garlaa" })
+        }
+    }
+    catch (err) {
+        res.json({ status: false, message: err });
+    }
 }
 
-exports.update = (req, res) => {
-    const { id, categoryName, link } = req.body;
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
+exports.update = async (req, res) => {
+    const { catId } = req.params;
+    if (!catId) {
+        return res.json({ status: false, message: "category id not found" })
+    }
+    try {
+        const result = await catService.updateCategory(catId, req.body);
+        if (result.length > 0 && result[0].affectedRows > 0) {
+
+            res.json({ status: true, message: "Success" });
         }
-        const parsedDAta = JSON.parse(data)
-        const updateData = parsedDAta.map((catObj) => {
-            if (catObj.id == id) {
-                return { ...catObj, categoryName, link }
-            }
-            else {
-                return catObj
-            }
-        });
-        fs.writeFile(dataFile, JSON.stringify(updateData), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: updateData })
-        })
-    })
+        else {
+            res.json({ status: false, message: "Zasahad aldaa garlaa" })
+        }
+    }
+    catch (err) {
+        res.json({ status: false, message: err });
+    }
+
 }
 
-exports.delete = (req, res) => {
-    const { id } = req.params;
-    fs.readFile(dataFile, "utf-8", (readErr, data) => {
-        if (readErr) {
-            return res.json({ status: false, message: readErr })
-        }
-        const parsedData = JSON.parse(data);
-        const deletedData = parsedData.filter((e) => e.id != id);
+exports.delete = async (req, res) => {
+    const { catId } = req.params;
+    if (!catId) {
+        return res.json({ status: false, message: "category id not found" })
+    }
+    try {
+        const result = await catService.deleteCategory(catId);
+        if (result && result.affectedRows > 0) {
 
-        fs.writeFile(dataFile, JSON.stringify(deletedData), (writeErr) => {
-            if (writeErr) {
-                return res.json({ status: false, message: writeErr })
-            }
-            return res.json({ status: true, result: deletedData })
-        })
-    })
+            res.json({ status: true, message: "Success" });
+        }
+        else {
+            res.json({ status: false, message: "Ustgahad aldaa garlaa" })
+        }
+    }
+    catch (err) {
+        res.json({ status: false, message: err });
+    }
 }
